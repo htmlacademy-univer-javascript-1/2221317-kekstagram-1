@@ -54,4 +54,3 @@ function getID(property) {
 let commentsIdList = [];
 let photosIdList = [];
 photosList = Array.from({length: 25}, createPhoto);
-
