@@ -25,7 +25,7 @@ function createPhoto() {
         description: 'Невероятно красивая картинка',
         likes: getRandomNumber(15, 200),
         comments: Array.from({length: getRandomNumber(1, 3)}, createComment)
-    }
+    };
     photosIdList.push(newPhoto.id);
     return newPhoto;
 }
