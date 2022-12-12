@@ -1,5 +1,6 @@
 import {createPhoto} from './util.js';
 import {createProfilePic, createFragment} from './draw.js';
+import {BigPictureHandler} from './bigPicture.js';
 
 const postsCount = 25;
 const postsList = [];
