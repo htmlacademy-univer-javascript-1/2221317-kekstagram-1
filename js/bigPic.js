@@ -56,8 +56,16 @@ function update({url, description, likes, comms}) {
   loadCommentBtn.onclick = () => loadComments(comms);
 }
 
-function BigPictureHandler() {
-  cancelBtn.onclick = closeBigPic;
+export function BigPictureHandler(usersImgDescriptions) {
+  const userPictures = document.querySelectorAll('.picture');
+  userPictures.forEach((picture, i) => {
+    const {url, description, likes, comms} = usersImgDescriptions[i];
+    picture.onclick = function () {
+      showBigPic();
+      update(url, description, likes, comms);
+      cancelBtn.onclick = closeBigPic;
+    };
+  });
 }
 
-export {showBigPic, closeBigPic, update, BigPictureHandler};
+export {showBigPic, closeBigPic, update};
