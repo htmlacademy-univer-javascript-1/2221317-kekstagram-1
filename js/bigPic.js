@@ -4,14 +4,14 @@ import { body } from './main.js';
 const bigPicElement = document.querySelector('.big-picture');
 const bigPicImg = document.querySelector('.big-picture__img').querySelector('img');
 const bigPicDescription = bigPicElement.querySelector('.social__caption');
-const bigPicCurrentCommentsCount = bigPicElement.querySelector('.current-comms-count');
-const loadCommentBtn = bigPicElement.querySelector('.comms-loader');
-const commentsCount = bigPicElement.querySelector('.comms-count');
+const bigPicCurrentCommentsCount = bigPicElement.querySelector('.current-comments-count');
+const loadCommentBtn = bigPicElement.querySelector('.comments-loader');
+const commentsCount = bigPicElement.querySelector('.comments-count');
 const likesCount = bigPicElement.querySelector('.likes-count');
 const comments = bigPicElement.querySelector('.social__comments');
 const commentTemplate = comments.querySelector('.social__comment');
 const cancelBtn = bigPicElement.querySelector('#picture-cancel');
-let currentCommentsCount = 0;
+let currentComments = 0;
 
 function showBigPic() {
   bigPicElement.classList.remove('hidden');
@@ -23,7 +23,7 @@ function closeBigPic() {
   bigPicElement.classList.add('hidden');
   body.classList.remove('modal-open');
   document.removeEventListener('keydown', escapeBigPic);
-  currentCommentsCount = 0;
+  currentComments = 0;
 }
 
 const escapeBigPic = (evt) => {
@@ -32,18 +32,17 @@ const escapeBigPic = (evt) => {
   }
 };
 
-
 function loadComments(comms) {
-  comms.slice(currentCommentsCount, currentCommentsCount + 5).forEach(({ avatar, message }) => {
+  comms.slice(currentComments, currentComments + 5).forEach(({ avatar, message }) => {
     const userComment = commentTemplate.cloneNode(true);
     const userCommentAvatar = userComment.querySelector('img');
     userCommentAvatar.src = avatar;
     const userCommentMessage = userComment.querySelector('p');
     userCommentMessage.textContent = message;
     comments.append(userComment);
-    currentCommentsCount++;
+    currentComments++;
   });
-  bigPicCurrentCommentsCount.textContent = currentCommentsCount;
+  bigPicCurrentCommentsCount.textContent = currentComments;
 }
 
 function update({url, description, likes, comms}) {
