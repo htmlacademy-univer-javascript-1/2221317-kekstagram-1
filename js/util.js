@@ -1,4 +1,4 @@
-import {COMMENTS, NAMES, commentsIdList} from './data.js';
+import {COMMENTS, NAMES, DESCRIPTIONS, commentsIdList} from './data.js';
 
 function getRandomNumber(from, to) {
   if (from < 0 || to < 0) {
@@ -22,7 +22,7 @@ function createPhoto(id) {
   const newPhoto = {
     id: id,
     url: `photos/${id}.jpg`,
-    description: `Невероятно красивая картинка #${id}`,
+    description: DESCRIPTIONS[getRandomNumber(0, DESCRIPTIONS.length - 1)],
     likes: getRandomNumber(15, 200),
     comments: Array.from({length: getRandomNumber(1, 3)}, createComment)
   };

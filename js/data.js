@@ -6,6 +6,8 @@ const COMMENTS = ['Всё отлично!', 'В целом всё неплохо
 
 const NAMES = ['Ира', 'Юля', 'Крис', 'Дарина', 'Лиза', 'Андрей', 'Данис', 'Настя', 'Лера'];
 
+const DESCRIPTIONS = ['ОПИСАНИЕ №1', 'ОПИСАНИЕ №2', 'ОПИСАНИЕ №3', 'ОПИСАНИЕ №4', 'ОПИСАНИЕ №5', 'ОПИСАНИЕ №6', 'ОПИСАНИЕ №7'];
+
 const commentsIdList = [];
 
-export {COMMENTS, NAMES, commentsIdList};
+export {COMMENTS, NAMES, DESCRIPTIONS, commentsIdList};
