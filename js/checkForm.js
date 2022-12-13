@@ -1,12 +1,3 @@
-const imageUpload = document.querySelector('.img-upload__form');
-const hashtagsInput = imageUpload.querySelector('.text__hashtags');
-const commentInput = imageUpload.querySelector('.text__description');
-const pristine = new Pristine(imageUpload, {
-  classTo: 'img-upload__field-wrapper',
-  errorTextParent: 'img-upload__field-wrapper',
-  errorTextClass: 'img-upload__field-wrapper__error'
-});
-
 const hashtagRegularExp = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
 
 function onFocusIgnoreEscKeydown(evt) {
@@ -30,20 +21,31 @@ function checkComment(value) {
   return value.length <= 140;
 }
 
-pristine.addValidator(
-  hashtagsInput,
-  checkHashtag,
-);
+function checkForm(imgUpload, hashtag, comment) {
+  const pristine = new Pristine(imgUpload, {
+    classTo: 'img-upload__field-wrapper',
+    errorTextParent: 'img-upload__field-wrapper',
+    errorTextClass: 'img-upload__field-wrapper__error'
+  });
+  pristine.addValidator(
+    hashtag,
+    checkHashtag,
+    'Максимальная длина одного хэш-тега 20 символов, включая решётку; нельзя указать больше 5 хэш-тегов.'
+  );
 
-pristine.addValidator(
-  commentInput,
-  checkComment,
-);
+  pristine.addValidator(
+    comment,
+    checkComment,
+    'Длина комментария не может составлять больше 140 символов.'
+  );
 
-hashtagsInput.onkeydown = onFocusIgnoreEscKeydown;
-commentInput.onkeydown = onFocusIgnoreEscKeydown;
+  hashtag.onkeydown = onFocusIgnoreEscKeydown;
+  comment.onkeydown = onFocusIgnoreEscKeydown;
 
-imageUpload.onsubmit = function (evt) {
-  evt.preventDefault();
-  pristine.validate();
-};
+  imgUpload.onsubmit = function (evt) {
+    evt.preventDefault();
+    pristine.validate();
+  };
+}
+
+export {checkForm};
