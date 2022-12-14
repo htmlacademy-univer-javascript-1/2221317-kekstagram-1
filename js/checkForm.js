@@ -21,8 +21,8 @@ function checkComment(value) {
   return value.length <= 140;
 }
 
-function checkForm(imgUpload, hashtag, comment) {
-  const pristine = new Pristine(imgUpload, {
+function checkForm(imgForm, hashtag, comment) {
+  const pristine = new Pristine(imgForm, {
     classTo: 'img-upload__field-wrapper',
     errorTextParent: 'img-upload__field-wrapper',
     errorTextClass: 'img-upload__field-wrapper__error'
@@ -42,7 +42,7 @@ function checkForm(imgUpload, hashtag, comment) {
   hashtag.onkeydown = onFocusIgnoreEscKeydown;
   comment.onkeydown = onFocusIgnoreEscKeydown;
 
-  imgUpload.onsubmit = function (evt) {
+  imgForm.onsubmit = function (evt) {
     evt.preventDefault();
     pristine.validate();
   };

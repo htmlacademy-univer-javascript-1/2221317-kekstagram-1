@@ -2,6 +2,7 @@ import {createPhoto} from './util.js';
 import {createProfilePic, createFragment} from './draw.js';
 import {BigPictureHandler} from './bigPic.js';
 import {createUsersPictures} from './gallery.js';
+import {uploadingForm} from './form.js';
 import './checkForm.js';
 
 const postsCount = 25;
@@ -14,4 +15,8 @@ picsArray.append(createFragment(postsList, createProfilePic));
 BigPictureHandler(createUsersPictures(postsCount));
 const body = document.querySelector('body');
 
-export {body};
+createUsersPictures();
+BigPictureHandler();
+uploadingForm();
+
+export {body, postsCount};
