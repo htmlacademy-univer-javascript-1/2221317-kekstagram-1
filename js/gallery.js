@@ -12,7 +12,7 @@ function createUsersPicture(userImgDescription, fragment) {
   userPicture.querySelector('.picture__img').src = url;
   userPicture.querySelector('.picture__comments').textContent = comments.length;
   userPicture.querySelector('.picture__likes').textContent = likes;
-  fragment.append(userPicture);
+  fragment.appendChild(userPicture);
 
   userPicture.onclick = () => {
     showBigPic();
@@ -26,5 +26,7 @@ export function createUsersPictures() {
   userImgDescriptions.forEach((userImgDescription) => {
     createUsersPicture(userImgDescription, fragment);
   });
-  picturesList.append(fragment);
+  picturesList.appendChild(fragment);
 }
+
+export {picturesList};
