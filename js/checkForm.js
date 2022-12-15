@@ -39,13 +39,7 @@ function checkForm(imgForm, hashtag, comment) {
     'Длина комментария не может составлять больше 140 символов.'
   );
 
-  hashtag.onkeydown = onFocusIgnoreEscKeydown;
-  comment.onkeydown = onFocusIgnoreEscKeydown;
-
-  imgForm.onsubmit = function (evt) {
-    evt.preventDefault();
-    pristine.validate();
-  };
+  return pristine.validate();
 }
 
-export {checkForm};
+export {checkForm, onFocusIgnoreEscKeydown};
