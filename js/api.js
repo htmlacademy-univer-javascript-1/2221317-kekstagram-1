@@ -1,3 +1,5 @@
+import {showFilter} from "./filters";
+
 function getData(onSuccess, onError) {
   fetch('https://26.javascript.pages.academy/kekstagram/data')
     .then((response) => {
@@ -8,6 +10,7 @@ function getData(onSuccess, onError) {
     })
     .then((data) => {
       onSuccess(data);
+      showFilter(data);
     })
     .catch((err) => {
       onError(err);
