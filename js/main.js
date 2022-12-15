@@ -4,6 +4,7 @@ import {BigPictureHandler} from './bigPic.js';
 import {createUsersPictures} from './gallery.js';
 import {uploadingForm} from './form.js';
 import './checkForm.js';
+import {getData} from './api.js';
 
 const postsCount = 25;
 const postsList = [];
@@ -15,7 +16,18 @@ picsArray.append(createFragment(postsList, createProfilePic));
 BigPictureHandler(createUsersPictures(postsCount));
 const body = document.querySelector('body');
 
-createUsersPictures();
+function getError(errorMessage) {
+  const errorTemplate = document.querySelector('#error').content.querySelector('section');
+  const error = errorTemplate.cloneNode(true);
+  error.querySelector('h2').textContent = errorMessage;
+  error.querySelector('button').remove();
+  body.append(error);
+  setTimeout(() => {
+    error.remove();
+  }, 5000);
+}
+
+getData(createUsersPictures, getError);
 BigPictureHandler();
 uploadingForm();
 

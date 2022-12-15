@@ -1,5 +1,6 @@
 import {body} from './main.js';
-import {checkForm} from './checkForm.js';
+import {checkForm, onFocusIgnoreEscKeydown} from './checkForm.js';
+import {sendData} from './api.js';
 
 const imageUpload = document.querySelector('.img-upload__form');
 const hashtagsInput = imageUpload.querySelector('.text__hashtags');
@@ -14,6 +15,7 @@ const scaleControl = imageUpload.querySelector('.scale__control--value');
 const preview = imageUpload.querySelector('.img-upload__preview');
 const scaleSlider = imageUpload.querySelector('.effect-level__slider');
 const effectLevel = imageUpload.querySelector('.effect-level__value');
+const submitBtn = imageUpload.querySelector('#upload-submit');
 const effectsPresets = {
   'chrome': { filter: 'grayscale( )', options: { range: { min: 0, max: 1, }, start: 0, step: 0.1, connect: 'lower' } },
   'sepia': { filter: 'sepia( )', options: { range: { min: 0, max: 1, }, start: 0, step: 0.1, connect: 'lower' } },
@@ -31,6 +33,7 @@ function changePreviewEffectClass(newEffectName) {
   preview.classList.add(newEffect);
   prevEffect = newEffect;
 }
+let message = undefined;
 
 const changeEffect = (evt) => {
   if (evt.target.matches('input[type="radio"]')) {
@@ -74,6 +77,73 @@ const escapeFileUpload = (evt) => {
   }
 };
 
+const escapeMessage = (evt, messageBlock, abortController) => {
+  if (evt.key === 'Escape') {
+    removeMessageBlock(messageBlock, abortController);
+  }
+};
+
+const messageOutClick = (evt, messageBlock, isError, abortController) => {
+  if (!evt.target.closest(`.${isError ? 'error' : 'success'}__inner`)) {
+    removeMessageBlock(messageBlock, abortController);
+  }
+};
+
+function removeMessageBlock(messageBlock, abortController) {
+  abortController.abort();
+  document.addEventListener('keydown', escapeFileUpload);
+  body.removeChild(messageBlock);
+}
+
+function createMessageBlock(isError) {
+  document.removeEventListener('keydown', escapeFileUpload);
+  const messageTemplate = document.querySelector(`#${isError ? 'error' : 'success'}`).content.querySelector('section');
+  const messageClone = messageTemplate.cloneNode(true);
+  const button = messageClone.querySelector('button');
+  body.append(messageClone);
+  const abortController = new AbortController();
+  button.onclick = () => removeMessageBlock(messageClone, abortController);
+  messageClone.onclick = (evt) => messageOutClick(evt, messageClone, isError, abortController);
+  document.addEventListener('keydown', (evt) => escapeMessage(evt, messageClone, abortController), { signal: abortController.signal });
+}
+function createPostMessage() {
+  const messageTemplate = document.querySelector('#messages').content.querySelector('div');
+  const messageClone = messageTemplate.cloneNode(true);
+  body.append(messageClone);
+  return messageClone;
+}
+
+function removePostMessage(messageClone) {
+  body.removeChild(messageClone);
+}
+
+function confirmPost() {
+  imageUpload.reset();
+  createMessageBlock(false);
+}
+
+function breakPost() {
+  createMessageBlock(true);
+}
+
+function blockSubmitButton() {
+  submitBtn.disabled = true;
+  message = createPostMessage();
+}
+
+function unblockSubmitButton() {
+  submitBtn.disabled = false;
+  removePostMessage(message);
+}
+
+const setUploadFormSubmit = (evt) => {
+  evt.preventDefault();
+  if (checkForm(imageUpload, hashtagsInput, commentInput)) {
+    blockSubmitButton();
+    sendData(confirmPost, breakPost, new FormData(evt.target), unblockSubmitButton);
+  }
+};
+
 function openFileUpload() {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
@@ -83,8 +153,9 @@ function openFileUpload() {
   imageUpload.addEventListener('change', changeEffect);
   smallerBtn.onclick = () => resize('25%');
   biggerBtn.onclick = () => resize('100%');
-  checkForm(imageUpload, hashtagsInput, commentInput);
   cancelBtn.onclick = closeFileUpload;
+  hashtagsInput.onkeydown = commentInput.onkeydown = onFocusIgnoreEscKeydown;
+  imageUpload.addEventListener('submit', setUploadFormSubmit);
 }
 
 function closeFileUpload() {
@@ -94,6 +165,7 @@ function closeFileUpload() {
   preview.style.filter = 'none';
   document.removeEventListener('keydown', escapeFileUpload);
   imageUpload.removeEventListener('change', changeEffect);
+  imageUpload.removeEventListener('submit', setUploadFormSubmit);
 }
 
 export function uploadingForm() {
