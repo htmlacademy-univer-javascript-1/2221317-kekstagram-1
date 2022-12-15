@@ -1,4 +1,4 @@
-import {showFilter} from "./filters";
+import {showFilter} from './filters';
 
 function getData(onSuccess, onError) {
   fetch('https://26.javascript.pages.academy/kekstagram/data')
