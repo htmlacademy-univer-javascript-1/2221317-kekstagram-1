@@ -12,7 +12,7 @@ const uploadOverlay = document.querySelector('.img-upload__overlay');
 const smallerBtn = imageUpload.querySelector('.scale__control--smaller');
 const biggerBtn = imageUpload.querySelector('.scale__control--bigger');
 const scaleControl = imageUpload.querySelector('.scale__control--value');
-const preview = imageUpload.querySelector('.img-upload__preview');
+const preview = imageUpload.querySelector('.img-upload__preview').querySelector('img');
 const scaleSlider = imageUpload.querySelector('.effect-level__slider');
 const effectLevel = imageUpload.querySelector('.effect-level__value');
 const submitBtn = imageUpload.querySelector('#upload-submit');
@@ -119,6 +119,8 @@ function removePostMessage(messageClone) {
 
 function confirmPost() {
   imageUpload.reset();
+  preview.src = 'img/upload-default-image.jpg';
+  preview.style.filter = 'none';
   createMessageBlock(false);
 }
 
@@ -172,3 +174,4 @@ export function uploadingForm() {
   uploadBtn.onclick = openFileUpload;
 }
 
+export {preview};

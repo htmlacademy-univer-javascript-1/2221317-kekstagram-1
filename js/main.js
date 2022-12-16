@@ -5,6 +5,7 @@ import {createUsersPictures} from './gallery.js';
 import {uploadingForm} from './form.js';
 import './checkForm.js';
 import {getData} from './api.js';
+import './prview.js';
 
 const postsCount = 25;
 const postsList = [];

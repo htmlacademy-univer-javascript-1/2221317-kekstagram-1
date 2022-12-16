@@ -1,5 +1,5 @@
 import {createUsersPictures, picturesList} from './gallery.js';
-import {getRandomPositiveInt, throttle} from './util.js';
+import {getRandomNumber, throttle} from './util.js';
 
 const picturesListHeader = picturesList.children[0];
 const uploadPicBtn = picturesList.children[1];
@@ -44,7 +44,7 @@ function setActive(button) {
 function getRandomUsersPictures(data) {
   const randomPics = data.slice();
   while (randomPics.length > 10) {
-    randomPics.splice(getRandomPositiveInt(0, randomPics.length), 1);
+    randomPics.splice(getRandomNumber(0, randomPics.length), 1);
   }
   return randomPics;
 }
