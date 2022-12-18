@@ -1,12 +1,9 @@
 import {showBigPic, update} from './bigPic.js';
-import {DESCRIPTIONS} from './data.js';
-import {getRandomNumber} from './util.js';
-import {postsCount} from './main.js';
 
 const picturesList = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-function createUsersPicture(userImgDescription, fragment) {
+function createUserPicture(userImgDescription, fragment) {
   const {url, comments, likes} = userImgDescription;
   const userPicture = pictureTemplate.cloneNode(true);
   userPicture.querySelector('.picture__img').src = url;
@@ -20,11 +17,10 @@ function createUsersPicture(userImgDescription, fragment) {
   };
 }
 
-export function createUsersPictures() {
-  const userImgDescriptions = Array.from({length: postsCount}, DESCRIPTIONS[getRandomNumber(0, DESCRIPTIONS.length - 1)]);
+export function createUsersPictures(userImgDescriptions) {
   const fragment = document.createDocumentFragment();
   userImgDescriptions.forEach((userImgDescription) => {
-    createUsersPicture(userImgDescription, fragment);
+    createUserPicture(userImgDescription, fragment);
   });
   picturesList.appendChild(fragment);
 }
