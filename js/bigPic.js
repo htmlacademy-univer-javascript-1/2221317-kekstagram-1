@@ -4,26 +4,26 @@ import { body } from './main.js';
 const bigPicElement = document.querySelector('.big-picture');
 const bigPicImg = document.querySelector('.big-picture__img').querySelector('img');
 const bigPicDescription = bigPicElement.querySelector('.social__caption');
-const bigPicCurrentCommentsCount = bigPicElement.querySelector('.current-comments-count');
-const loadCommentBtn = bigPicElement.querySelector('.comments-loader');
+const currentCommentsCount = bigPicElement.querySelector('.current-comments-count');
+const commentsLoadButton = bigPicElement.querySelector('.comments-loader');
 const commentsCount = bigPicElement.querySelector('.comments-count');
 const likesCount = bigPicElement.querySelector('.likes-count');
-const comments = bigPicElement.querySelector('.social__comments');
-const commentTemplate = comments.querySelector('.social__comment');
+const picComments = bigPicElement.querySelector('.social__comments');
+const commentTemplate = picComments.querySelector('.social__comment');
 const cancelBtn = bigPicElement.querySelector('#picture-cancel');
-let currentComments = 0;
+let uptoDateCommentsCount = 0;
 
 function showBigPic() {
-  bigPicElement.classList.remove('hidden');
   body.classList.add('modal-open');
+  bigPicElement.classList.remove('hidden');
   document.addEventListener('keydown', escapeBigPic);
 }
 
 function closeBigPic() {
-  bigPicElement.classList.add('hidden');
   body.classList.remove('modal-open');
+  bigPicElement.classList.add('hidden');
   document.removeEventListener('keydown', escapeBigPic);
-  currentComments = 0;
+  uptoDateCommentsCount = 0;
 }
 
 const escapeBigPic = (evt) => {
@@ -32,39 +32,32 @@ const escapeBigPic = (evt) => {
   }
 };
 
-function loadComments(comms) {
-  comms.slice(currentComments, currentComments + 5).forEach(({ avatar, message }) => {
+
+const loadComments = (comments) => {
+  comments.slice(uptoDateCommentsCount, uptoDateCommentsCount + 5).forEach(({ avatar, message }) => {
     const userComment = commentTemplate.cloneNode(true);
     const userCommentAvatar = userComment.querySelector('img');
     userCommentAvatar.src = avatar;
     const userCommentMessage = userComment.querySelector('p');
     userCommentMessage.textContent = message;
-    comments.append(userComment);
-    currentComments++;
+    picComments.append(userComment);
+    uptoDateCommentsCount++;
   });
-  bigPicCurrentCommentsCount.textContent = currentComments;
-}
+  currentCommentsCount.textContent = uptoDateCommentsCount;
+};
 
-function update({url, description, likes, comms}) {
+function update({ url, description, likes, comments }) {
   bigPicImg.src = url;
   bigPicDescription.textContent = description;
   likesCount.textContent = likes;
-  commentsCount.textContent = comms.length;
-  comments.innerHTML = '';
-  loadComments(comms);
-  loadCommentBtn.onclick = () => loadComments(comms);
+  commentsCount.textContent = comments.length;
+  picComments.innerHTML = '';
+  loadComments(comments);
+  commentsLoadButton.onclick = () => loadComments(comments);
 }
 
-export function BigPictureHandler(usersImgDescriptions) {
-  const userPictures = document.querySelectorAll('.picture');
-  userPictures.forEach((picture, i) => {
-    const {url, description, likes, comms} = usersImgDescriptions[i];
-    picture.onclick = function () {
-      showBigPic();
-      update(url, description, likes, comms);
-      cancelBtn.onclick = closeBigPic;
-    };
-  });
+export function BigPictureHandler() {
+  cancelBtn.onclick = closeBigPic;
 }
 
 export {showBigPic, closeBigPic, update};

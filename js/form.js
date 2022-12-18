@@ -1,13 +1,13 @@
-import {body} from './main.js';
-import {checkForm, onFocusIgnoreEscKeydown} from './checkForm.js';
-import {sendData} from './api.js';
+import { sendData } from './api.js';
+import { body } from './main.js';
+import { checkForm, onFocusIgnoreEscKeydown } from './checkForm.js';
 
 const imageUpload = document.querySelector('.img-upload__form');
 const hashtagsInput = imageUpload.querySelector('.text__hashtags');
 const commentInput = imageUpload.querySelector('.text__description');
 const uploadBtn = document.querySelector('#upload-file');
-const cancelBtn = document.querySelector('#upload-cancel');
-const uploadOverlay = document.querySelector('.img-upload__overlay');
+const cancelBtn = imageUpload.querySelector('#upload-cancel');
+const uploadOverlay = imageUpload.querySelector('.img-upload__overlay');
 
 const smallerBtn = imageUpload.querySelector('.scale__control--smaller');
 const biggerBtn = imageUpload.querySelector('.scale__control--bigger');
@@ -16,7 +16,7 @@ const preview = imageUpload.querySelector('.img-upload__preview').querySelector(
 const scaleSlider = imageUpload.querySelector('.effect-level__slider');
 const effectLevel = imageUpload.querySelector('.effect-level__value');
 const submitBtn = imageUpload.querySelector('#upload-submit');
-const effectsPresets = {
+const effectsData = {
   'chrome': { filter: 'grayscale( )', options: { range: { min: 0, max: 1, }, start: 0, step: 0.1, connect: 'lower' } },
   'sepia': { filter: 'sepia( )', options: { range: { min: 0, max: 1, }, start: 0, step: 0.1, connect: 'lower' } },
   'marvin': { filter: 'invert( %)', options: { range: { min: 0, max: 100, }, start: 0, step: 1, connect: 'lower' } },
@@ -24,7 +24,7 @@ const effectsPresets = {
   'heat': { filter: 'brightness( )', options: { range: { min: 1, max: 3, }, start: 1, step: 0.1, connect: 'lower' } },
 };
 
-noUiSlider.create(scaleSlider, effectsPresets['chrome'].options);
+noUiSlider.create(scaleSlider, effectsData['chrome'].options);
 
 let prevEffect = 'effects__preview--none';
 function changePreviewEffectClass(newEffectName) {
@@ -33,7 +33,8 @@ function changePreviewEffectClass(newEffectName) {
   preview.classList.add(newEffect);
   prevEffect = newEffect;
 }
-let message = undefined;
+
+let post = undefined;
 
 const changeEffect = (evt) => {
   if (evt.target.matches('input[type="radio"]')) {
@@ -44,11 +45,11 @@ const changeEffect = (evt) => {
       if (scaleSlider.classList.contains('hidden')) {
         scaleSlider.classList.remove('hidden');
       }
-      scaleSlider.noUiSlider.updateOptions(effectsPresets[newEffectName].options);
+      scaleSlider.noUiSlider.updateOptions(effectsData[newEffectName].options);
 
       scaleSlider.noUiSlider.on('update', () => {
         effectLevel.value = scaleSlider.noUiSlider.get();
-        const filter = effectsPresets[newEffectName].filter.replace(' ', effectLevel.value);
+        const filter = effectsData[newEffectName].filter.replace(' ', effectLevel.value);
         preview.style.filter = filter;
       });
     }
@@ -60,16 +61,14 @@ const changeEffect = (evt) => {
 };
 
 function resize(limit) {
-  let k = -1;
-  if (limit === '100%') {
-    k = 1;
-  }
+  const k = limit === '100%' ? 1 : -1;
   if (scaleControl.value !== limit) {
     const scaleControlValueNumber = Number(scaleControl.value.replace('%', '')) + 25 * k;
     scaleControl.value = `${scaleControlValueNumber}%`;
     preview.style.transform = `scale(${scaleControlValueNumber / 100})`;
   }
 }
+
 
 const escapeFileUpload = (evt) => {
   if (evt.key === 'Escape') {
@@ -98,23 +97,23 @@ function removeMessageBlock(messageBlock, abortController) {
 function createMessageBlock(isError) {
   document.removeEventListener('keydown', escapeFileUpload);
   const messageTemplate = document.querySelector(`#${isError ? 'error' : 'success'}`).content.querySelector('section');
-  const messageClone = messageTemplate.cloneNode(true);
-  const button = messageClone.querySelector('button');
-  body.append(messageClone);
+  const message = messageTemplate.cloneNode(true);
+  const button = message.querySelector('button');
+  body.append(message);
   const abortController = new AbortController();
-  button.onclick = () => removeMessageBlock(messageClone, abortController);
-  messageClone.onclick = (evt) => messageOutClick(evt, messageClone, isError, abortController);
-  document.addEventListener('keydown', (evt) => escapeMessage(evt, messageClone, abortController), { signal: abortController.signal });
+  button.onclick = () => removeMessageBlock(message, abortController);
+  message.onclick = (evt) => messageOutClick(evt, message, isError, abortController);
+  document.addEventListener('keydown', (evt) => escapeMessage(evt, message, abortController), { signal: abortController.signal });
 }
 function createPostMessage() {
   const messageTemplate = document.querySelector('#messages').content.querySelector('div');
-  const messageClone = messageTemplate.cloneNode(true);
-  body.append(messageClone);
-  return messageClone;
+  const message = messageTemplate.cloneNode(true);
+  body.append(message);
+  return message;
 }
 
-function removePostMessage(messageClone) {
-  body.removeChild(messageClone);
+function removePostMessage(message) {
+  body.removeChild(message);
 }
 
 function confirmPost() {
@@ -130,12 +129,12 @@ function breakPost() {
 
 function blockSubmitButton() {
   submitBtn.disabled = true;
-  message = createPostMessage();
+  post = createPostMessage();
 }
 
 function unblockSubmitButton() {
   submitBtn.disabled = false;
-  removePostMessage(message);
+  removePostMessage(post);
 }
 
 const setUploadFormSubmit = (evt) => {
@@ -147,11 +146,10 @@ const setUploadFormSubmit = (evt) => {
 };
 
 function openFileUpload() {
-  uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
+  uploadOverlay.classList.remove('hidden');
   scaleSlider.classList.add('hidden');
   document.addEventListener('keydown', escapeFileUpload);
-
   imageUpload.addEventListener('change', changeEffect);
   smallerBtn.onclick = () => resize('25%');
   biggerBtn.onclick = () => resize('100%');
@@ -161,17 +159,18 @@ function openFileUpload() {
 }
 
 function closeFileUpload() {
-  uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
+  uploadOverlay.classList.add('hidden');
   imageUpload.reset();
   preview.style.filter = 'none';
+  preview.src = 'img/upload-default-image.jpg';
   document.removeEventListener('keydown', escapeFileUpload);
   imageUpload.removeEventListener('change', changeEffect);
   imageUpload.removeEventListener('submit', setUploadFormSubmit);
 }
 
-export function uploadingForm() {
+function uploadingForm() {
   uploadBtn.onclick = openFileUpload;
 }
 
-export {preview};
+export { uploadingForm, preview };
